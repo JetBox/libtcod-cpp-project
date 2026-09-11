@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug (build folder)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/libtcod-vcpkg-template.exe",
+      "args": [],
+      // Run from the workspace root so get_data_dir() can find the "data" folder.
+      "cwd": "${workspaceFolder}",
+      // Compile + regenerate the clangd database before launching.
+      "preLaunchTask": "Build + regen clangd DB (Debug)"
+    },
+    {
+      "name": "Run (no build)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/bin/libtcod-vcpkg-template.exe",
+      "args": [],
+      // Run from the workspace root so get_data_dir() can find the "data" folder.
+      "cwd": "${workspaceFolder}"
+      // No preLaunchTask: launches the already-built executable as-is.
+    }
+  ]
+}
