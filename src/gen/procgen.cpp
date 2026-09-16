@@ -93,6 +93,8 @@ void generateDungeon(
       }
     }
   }
+
+  world.getMap(mapID).buildFOVMap();
 }
 
 bool isWallsOnBothSides(GameMap& map, Position p) {
@@ -153,6 +155,8 @@ void placeEntities(
       }
     }
 
+    // TODO: Reenable enemy spawning when I feel like it
+    canSpawn = false;
     if (canSpawn) {
       if (rng->getInt(0, 9) < 8) {
         // Spawn ORC 80% of time

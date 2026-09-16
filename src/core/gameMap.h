@@ -58,6 +58,8 @@ class GameMap {
 
   TCODPath& getPathfinder();
 
+  Position getNextStep(Position start, Position target);
+
   void updateFOVCell(Position pos);
 
   Entity* getBlockingEntity(Position p);

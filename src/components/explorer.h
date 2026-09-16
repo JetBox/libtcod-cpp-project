@@ -27,7 +27,7 @@ class Explorer : public BaseComponent {
   bool hasExploredEntity(IDGenerator::ID entityID);
   Position getDiscoveredEntityLastPosition(IDGenerator::ID entityID);
 
-  void setIsVisible(Position pos, bool isVisible);
+  void setIsVisible(ExploredGrid& grid, Position pos, bool isVisible);
   bool isTileVisible(Position pos);
 
   void updateFOV(GameMap& map);

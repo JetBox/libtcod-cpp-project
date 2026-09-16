@@ -93,7 +93,9 @@ class Entity {
 
   IDGenerator::ID getID() { return this->id; }
 
-  void setID(IDGenerator::ID id) { this->id = id; }
+  void setID(IDGenerator::ID newID) { this->id = newID; }
+
+  void setComponentsOwner();
 
  private:
   IDGenerator::ID id = 0;

@@ -4,6 +4,7 @@
 
 #include "common/colors.h"
 #include "common/entity.h"
+#include "components/body.h"
 #include "components/item.h"
 
 std::string getEquipName(BodyPartKind kind) {
@@ -40,6 +41,7 @@ char getEquipItemChar(BodyPartKind kind) {
     case BodyPartKind::HEAD:
     case BodyPartKind::TORSO:
     case BodyPartKind::LEGS:
+    case BodyPartKind::BACK:
     case BodyPartKind::FEET:
       return '[';
     case BodyPartKind::ARMS:

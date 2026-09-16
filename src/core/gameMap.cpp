@@ -169,3 +169,10 @@ void GameMap::updateFOVCell(Position pos) {
   bool transparent = t.isTransparent && !this->hasVisionBlockingEntity(pos);
   this->fovMap->setProperties(pos.x, pos.y, transparent, t.isWalkable);
 }
+
+Position GameMap::getNextStep(Position start, Position target) {
+  this->getPathfinder().compute(start.x, start.y, target.x, target.y);
+  Position nextStep = Position();
+  this->getPathfinder().walk(&nextStep.x, &nextStep.y, true);
+  return nextStep;
+}

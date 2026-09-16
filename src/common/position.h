@@ -3,7 +3,7 @@
 #include <array>
 #include <stdexcept>
 
-enum class Direction { NORTH, SOUTH, EAST, WEST, NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST };
+enum class Direction { NORTH, SOUTH, EAST, WEST, NORTHWEST, NORTHEAST, SOUTHWEST, SOUTHEAST, STATIONARY };
 
 struct Position {
   int x, y;
@@ -40,6 +40,8 @@ struct Position {
         return Position(this->x + 1, this->y + 1);
       case Direction::SOUTHWEST:
         return Position(this->x - 1, this->y + 1);
+      case Direction::STATIONARY:
+        return Position(this->x, this->y);
       default:
         throw std::invalid_argument("Unexpected value of Direction");
     };
@@ -55,7 +57,6 @@ struct Position {
         return Position(this->x - 1, this->y);
       case Direction::WEST:
         return Position(this->x + 1, this->y);
-        ;
       case Direction::SOUTH:
         return Position(this->x, this->y - 1);
       case Direction::NORTHEAST:
@@ -66,6 +67,8 @@ struct Position {
         return Position(this->x - 1, this->y - 1);
       case Direction::SOUTHWEST:
         return Position(this->x + 1, this->y - 1);
+      case Direction::STATIONARY:
+        return Position(this->x, this->y);
     };
   }
   Position operator-(const Position& other) const { return Position(this->x - other.x, this->y - other.y); }
@@ -90,3 +93,5 @@ struct Position {
     return *this;
   }
 };
+
+Direction getDirectionToPosition(Position p1, Position p2);
