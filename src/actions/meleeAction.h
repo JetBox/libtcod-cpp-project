@@ -12,3 +12,5 @@ class MeleeAction : public Action {
   Direction dir;
   int damage;
 };
+
+int getMeleeAttackPower(Entity* entity);

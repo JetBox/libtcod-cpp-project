@@ -11,9 +11,12 @@
 #include "actions/openAction.h"
 #include "actions/unlockAction.h"
 #include "actions/walkAction.h"
+#include "common/glyphs.h"
 #include "components/ai/aiComponent.h"
+#include "components/combat.h"
 #include "components/explorer.h"
 #include "components/inventory.h"
+#include "components/item.h"
 #include "components/vitals.h"
 #include "core/engine.h"
 #include "core/windowFrame.h"
@@ -57,6 +60,17 @@ void PlayState::update(Engine& engine) {
 
     // Process the turn of the next entity
     processEntityTurn(engine, nextEntity);
+
+    // Process any deaths
+    for (auto& e : engine.getCurrentMap().getEntitiesWithComponent<Fighter>()) {
+      if (!e->getComponent<Fighter>().isAlive()) {
+        e->clearEntity();
+        e->setChar(CORPSE_GLYPH);
+        e->addComponent<Item>(e->getName() + " corpse", "Corpse");
+        e->setRenderOrder(RenderOrder::Corpse);
+        e->setBlocksMovement(false);
+      }
+    }
   }
 }
 

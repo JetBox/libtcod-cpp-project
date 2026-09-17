@@ -44,6 +44,10 @@ class Entity {
     pos = Position();
   }
 
+  ~Entity() { this->clearEntity(); }
+
+  void clearEntity();
+
   RenderOrder getRenderOrder() const { return this->renderOrder; }
   void setRenderOrder(RenderOrder order) { this->renderOrder = order; }
 

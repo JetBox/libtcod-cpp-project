@@ -120,7 +120,7 @@ void carveTunnel(GameMap& map, Position start, Position stop, bool withoutStart)
   }
 }
 
-// TODO: use tcod's random
+// TODO: use tcod's random noise
 void carveLTunnel(GameMap& map, TCODRandom* rng, Position start, Position end) {
   Position corner;
   if (rng->getInt(0, 1) == 0) {

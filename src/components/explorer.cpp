@@ -53,8 +53,13 @@ std::vector<Entity*> visibleEntities(GameMap& map, Explorer& explorer, Entity* s
   return result;
 }
 
+int Explorer::getFOVRadius() {
+  // TODO: factor in stuff like torches/light spell
+  return 5;
+}
+
 void Explorer::updateFOV(GameMap& map) {
-  int maxRadius = 0;  // TODO: If >0, this is how far the player can see
+  int maxRadius = this->getFOVRadius();  // TODO: If >0, this is how far the player can see
   TCODMap& fovMap = map.getFOVMap();
   fovMap.computeFov(this->getEntity()->getPosition().x, this->getEntity()->getPosition().y, maxRadius, true, FOV_BASIC);
 

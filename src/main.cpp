@@ -80,7 +80,7 @@ SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   player->addComponent<Body>();
   player->addComponent<Inventory>();
   player->addComponent<Fighter>();
-  player->addComponent<BaseStats>(5, 5, 5, 5, 5);
+  player->addComponent<BaseStats>(5, 5, 5, 5);
   player->addComponent<Vitals>(100, 0);
   player->addComponent<Speed>();
   player->addComponent<Explorer>(player.get());

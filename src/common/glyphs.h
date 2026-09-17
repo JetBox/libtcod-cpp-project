@@ -10,6 +10,7 @@ static constexpr int FILLED_CIRCLE = 0x2022;
 static constexpr int DOOR_CHAR = '#';
 static constexpr int DOOR_OPEN_CHAR = '/';
 static constexpr int KEY_GLYPH = 0x266A;
+static constexpr int CORPSE_GLYPH = '%';
 
 static const std::string OPEN_CIRCLE_STRING = "\u25CB";
 static const std::string FILLED_CIRCLE_STRING = "\u25C9";

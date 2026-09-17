@@ -116,7 +116,7 @@ void Engine::renderUI(tcod::Console* console) {
   int inset = UI_X + 1;
   int line = 1;
 
-  // Draw Name and Title TODO: Add Title/Identity
+  // Draw Name and Title TODO: Add Title
   tcod::print_rect(*console, {inset, line, w, 1}, this->getPlayer()->getName(), WHITE, std::nullopt);
 
   // Draw Health

@@ -32,6 +32,8 @@ class Explorer : public BaseComponent {
 
   void updateFOV(GameMap& map);
 
+  int getFOVRadius();
+
  private:
   IDGenerator::ID currentMap = 0;
   std::unordered_map<IDGenerator::ID, ExploredGrid> visitedMaps;

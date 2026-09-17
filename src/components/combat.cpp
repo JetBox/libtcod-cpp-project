@@ -6,13 +6,9 @@
 
 #include "common/entity.h"
 
-void BaseStats::setConstitution(int con) {
-  this->constitution = std::max(std::min(con, MAX_STAT), MIN_STAT);
-  // Set HP/Max HP based on new constitution
-  assert(this->getEntity() && "Owner must be set for BaseStats");
-  assert(this->getEntity()->hasComponent<Fighter>());
-  // Fighter f = this->getEntity()->getComponent<Fighter>();
-  //  TODO: Set hp based on constitution
+void Fighter::takeDamage(int incomingDamage) {
+  int newHP = this->hp - incomingDamage;
+  this->setHP(newHP);
 }
 
 bool makeStatCheck(int stat) {
