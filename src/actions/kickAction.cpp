@@ -20,8 +20,8 @@ ActionResult KickAction::perform(Engine& engine, Entity* entity) {
   }
 
   // Make a strength check
-  if (!entity->hasComponent<BaseStats>()) {
-    return ActionResult(false, "ERROR: Need a BaseStats component to kick.");
+  if (!entity->hasComponent<Fighter>()) {
+    return ActionResult(false, "ERROR: Need a Fighter component to kick.");
   }
 
   // First, decay fatigue
@@ -34,8 +34,8 @@ ActionResult KickAction::perform(Engine& engine, Entity* entity) {
     return ActionResult(false, "You kick into the air.");
   }
 
-  BaseStats bs = entity->getComponent<BaseStats>();
-  bool success = makeStatCheck(bs.getStrength());
+  Fighter fighter = entity->getComponent<Fighter>();
+  bool success = makeStatCheck(fighter.getBaseStats().getStrength());
 
   if (!success) {
     return ActionResult(true, "You kicked at the " + target->getName() + " to no avail.");

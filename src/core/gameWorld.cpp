@@ -1,6 +1,7 @@
 #include "gameWorld.h"
 
 #include "common/idGenerator.h"
+#include "components/explorer.h"
 #include "core/gameMap.h"
 
 IDGenerator::ID GameWorld::createMap(int width, int height) {
@@ -21,6 +22,16 @@ void GameWorld::addEntityToMap(std::unique_ptr<Entity> entity, IDGenerator::ID m
   if (entity->getID() == 0) {
     entity->setID(this->entityIDGenerator.next());
   }
+
+  // Assign the entities components owners
+  entity->setComponentsOwner();
+
+  // Initialize Explorer Map
+  if (entity->hasComponent<Explorer>()) {
+    entity->getComponent<Explorer>().addMap(this->maps.at(mapID));
+  }
+
+  // Actually add to the map
   GameMap& map = this->maps.at(mapID);
   map.addEntity(std::move(entity));
 }

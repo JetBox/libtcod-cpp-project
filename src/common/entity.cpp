@@ -5,6 +5,7 @@
 #include "colors.h"
 #include "components/ai/aiComponent.h"
 #include "components/combat.h"
+#include "components/component.h"
 #include "components/explorable.h"
 
 void Entity::move(Direction dir) { this->pos = this->pos + dir; }
@@ -14,6 +15,12 @@ void Entity::clearEntity() {
     val->setEntity(nullptr);
   }
   this->components.clear();
+}
+
+void Entity::setComponentsOwner() {
+  for (auto& [key, value] : this->components) {
+    value->setEntity(this);
+  }
 }
 
 std::unique_ptr<Entity> spawnOrc(Position p) {
@@ -26,5 +33,10 @@ std::unique_ptr<Entity> spawnOrc(Position p) {
 }
 
 std::unique_ptr<Entity> spawnTroll(Position p) {
-  return std::make_unique<Entity>(p, 'T', TROLL_GREEN, "orc", RenderOrder::Actor, true);
+  std::unique_ptr<Entity> troll = std::make_unique<Entity>(p, 'T', TROLL_GREEN, "troll", RenderOrder::Actor, true);
+  troll->addComponent<Explorable>(ORC_GREEN_DARK, true);
+  troll->addComponent<AIComponent>();
+  troll->addComponent<Speed>();
+  troll->addComponent<Fighter>(10);
+  return troll;
 }

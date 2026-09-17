@@ -80,7 +80,6 @@ SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   player->addComponent<Body>();
   player->addComponent<Inventory>();
   player->addComponent<Fighter>();
-  player->addComponent<BaseStats>(5, 5, 5, 5);
   player->addComponent<Vitals>(100, 0);
   player->addComponent<Speed>();
   player->addComponent<Explorer>(player.get());
@@ -119,4 +118,36 @@ TODO LIST:
 - Auto-Explore
 - Magic
 - Config Files
+*/
+
+/*
+- Guy/kid finds a hole in his backyard
+- Can bring household tools with him + backpack
+- Weapons include things like kitchen knife + maybe gun
+- First few levels are caves, but then progresses into "cooler" stuff
+- Stats vs Skills
+  - Stats = str, dex, agi, etc.
+    - Little interesting variation
+  - Skills = aim, sword, etc.
+    - Can feel grindy
+  - Nothing
+    - Pure item based balancing
+    - Can be harder to do right
+    - Little sense of progression besides looting
+  - Combat:
+    - Dodge vs. Armor
+    - Speed/AGI factors in here
+*/
+
+/*
+- Wizard game with merge crafting
+- Find "spells" combine them to make new spells.
+- No classes, no build layouts
+- Most items are equipment (magic hats, capes, wands, spellbooks)
+- Mana limits your casting ability. Restores over time
+- Once you have a "spell" you have it forever. But mana costs limit your usage
+- No spell should just be an "upgrade" of an existing spell.
+- Merging can only be done by using rare components (can't just merge willy-nilly)
+- There should be 3-6 merge items per floor
+- Not meant to find all spells in a single run; discover them all over multiple runs
 */

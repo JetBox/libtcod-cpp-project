@@ -2,12 +2,20 @@
 
 #include <libtcod.hpp>
 #include <libtcod/console_types.hpp>
+#include <libtcod/path.hpp>
 #include <memory>
 
 #include "common/entity.h"
 #include "common/idGenerator.h"
 #include "common/position.h"
 #include "common/tiles.h"
+
+class GameMap;
+
+class MapPathCallback : public ITCODPathCallback {
+ public:
+  float getWalkCost(int xFrom, int yFrom, int xTo, int yTo, void* userData) const override;
+};
 
 class GameMap {
   friend class GameWorld;
@@ -58,6 +66,8 @@ class GameMap {
 
   TCODPath& getPathfinder();
 
+  Position getNextStep(Position start, Position target);
+
   void updateFOVCell(Position pos);
 
   Entity* getBlockingEntity(Position p);
@@ -80,6 +90,7 @@ class GameMap {
   // FOV & Pathfinding
   std::unique_ptr<TCODMap> fovMap;
   std::unique_ptr<TCODPath> pathfinder;
+  std::unique_ptr<MapPathCallback> pathCallback;
 
   // Entities
   std::vector<std::unique_ptr<Entity>> entities;

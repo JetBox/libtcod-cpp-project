@@ -93,7 +93,12 @@ void PlayState::processEntityTurn(Engine& engine, Entity* entity) {
   ActionResult result;
   while (true) {
     result = action->perform(engine, entity);
-    SDL_Log("%s: Action performed: %d -- %p", entity->getName().c_str(), result.succeeded, result.alternate.get());
+    SDL_Log(
+        "%s - %d: Action performed: %d -- %p",
+        entity->getName().c_str(),
+        entity->getID(),
+        result.succeeded,
+        result.alternate.get());
     // If there's a message, add it to the log
     Message& msg = result.message;
     if (msg.messageText != "" && entity == engine.getPlayer()) {

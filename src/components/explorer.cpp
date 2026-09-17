@@ -15,10 +15,7 @@ void Explorer::addMap(GameMap& map) {
   this->updateFOV(map);
 }
 
-void Explorer::setIsVisible(Position pos, bool isVisible) {
-  // Get the vector
-  ExploredGrid& grid = this->getCurrentMap();
-
+void Explorer::setIsVisible(ExploredGrid& grid, Position pos, bool isVisible) {
   // First, set explored if possible
   int loc = GameMap::getLocInTileVector(pos, grid.width);
   if (isVisible) {
@@ -42,17 +39,6 @@ Position Explorer::getDiscoveredEntityLastPosition(IDGenerator::ID entityID) {
   return grid.discoveredEntities.at(entityID);
 }
 
-std::vector<Entity*> visibleEntities(GameMap& map, Explorer& explorer, Entity* self) {
-  auto& grid = explorer.getMap(map.getID());
-  std::vector<Entity*> result;
-  for (const auto& e : map.getEntities()) {
-    if (e.get() == self) continue;
-    Position p = e->getPosition();
-    if (map.inBounds(p) && grid.visible[GameMap::getLocInTileVector(p, grid.width)]) result.push_back(e.get());
-  }
-  return result;
-}
-
 int Explorer::getFOVRadius() {
   // TODO: factor in stuff like torches/light spell
   return 5;
@@ -65,9 +51,9 @@ void Explorer::updateFOV(GameMap& map) {
 
   // Update the isVisible map with FOV information
   ExploredGrid& grid = this->getCurrentMap();
-  for (int x = 0; x < grid.width; x++) {
-    for (int y = 0; y < grid.height; y++) {
-      this->setIsVisible(Position(x, y), fovMap.isInFov(x, y));
+  for (int y = 0; y < grid.height; y++) {
+    for (int x = 0; x < grid.width; x++) {
+      this->setIsVisible(grid, Position(x, y), fovMap.isInFov(x, y));
     }
   }
 
@@ -77,4 +63,15 @@ void Explorer::updateFOV(GameMap& map) {
       grid.discoveredEntities.insert_or_assign(e->getID(), e->getPosition());
     }
   }
+}
+
+std::vector<Entity*> visibleEntities(GameMap& map, Explorer& explorer, Entity* self) {
+  auto& grid = explorer.getMap(map.getID());
+  std::vector<Entity*> result;
+  for (const auto& e : map.getEntities()) {
+    if (e.get() == self) continue;
+    Position p = e->getPosition();
+    if (map.inBounds(p) && grid.visible[GameMap::getLocInTileVector(p, grid.width)]) result.push_back(e.get());
+  }
+  return result;
 }

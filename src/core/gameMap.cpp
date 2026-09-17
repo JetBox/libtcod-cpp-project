@@ -10,6 +10,30 @@
 #include "components/explorable.h"
 #include "components/explorer.h"
 
+float MapPathCallback::getWalkCost(int xFrom, int yFrom, int xTo, int yTo, void* userData) const {
+  auto* map = static_cast<GameMap*>(userData);
+  if (!map) {
+    return 0.0f;
+  }
+  Position nextStep = Position(xTo, yTo);
+
+  Tile t = map->getTileAt(nextStep);
+  if (!t.isWalkable) {
+    return 0.0f;
+  }
+
+  float cost = 1.0f;
+  if (map->hasVisionBlockingEntity(nextStep)) {
+    cost += 3.0f;
+  }
+
+  if (map->getBlockingEntity(nextStep)) {
+    cost += 10.0f;
+  }
+
+  return cost;
+}
+
 GameMap::GameMap(IDGenerator::ID id, int width, int height) {
   this->id = id;
   this->width = width;
@@ -150,7 +174,8 @@ TCODMap& GameMap::getFOVMap() {
 
 TCODPath& GameMap::getPathfinder() {
   if (!this->pathfinder) {
-    this->pathfinder = std::make_unique<TCODPath>(&this->getFOVMap(), 0.0f);
+    this->pathCallback = std::make_unique<MapPathCallback>();
+    this->pathfinder = std::make_unique<TCODPath>(this->width, this->height, this->pathCallback.get(), this, 1.41f);
   }
   return *this->pathfinder;
 }
@@ -168,4 +193,12 @@ void GameMap::updateFOVCell(Position pos) {
   Tile t = this->getTileAt(pos);
   bool transparent = t.isTransparent && !this->hasVisionBlockingEntity(pos);
   this->fovMap->setProperties(pos.x, pos.y, transparent, t.isWalkable);
+}
+
+Position GameMap::getNextStep(Position start, Position target) {
+  this->getPathfinder().compute(start.x, start.y, target.x, target.y);
+  Position nextStep = Position();
+  this->getPathfinder().size();
+  this->getPathfinder().walk(&nextStep.x, &nextStep.y, true);
+  return nextStep;
 }

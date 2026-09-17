@@ -9,21 +9,17 @@
 #include "component.h"
 #include "math.h"
 
-class Fighter;
-
-class BaseStats : public BaseComponent {
+class BaseStats {
  public:
   BaseStats() = default;
-  BaseStats(int str, int agi, int con, int in) : strength(str), agility(agi), concentration(con), intelligence(in) {}
+
+  BaseStats(int str, int agi, int in) : strength(str), agility(agi), intelligence(in) {}
   int getStrength() { return this->strength; }
-  int getAgility() { return this->agility; }
-  int getConcentration() { return this->concentration; }
   int getIntelligence() { return this->intelligence; }
   // int getPerception() { return this->perception; }
 
   void setStrength(int str) { this->strength = std::max(std::min(str, MAX_STAT), MIN_STAT); }
   void setAgility(int agi) { this->agility = std::max(std::min(agi, MAX_STAT), MIN_STAT); }
-  void setConcentration(int con) { this->concentration = std::max(std::min(con, this->concentration), MAX_STAT); }
   void setIntelligence(int in) { this->intelligence = std::max(std::min(in, MAX_STAT), MIN_STAT); }
   // void setPerception(int per) { this->perception = std::max(std::min(per, MAX_STAT), MIN_STAT); }
 
@@ -32,7 +28,6 @@ class BaseStats : public BaseComponent {
   static constexpr int MIN_STAT = 0;
   int strength;
   int agility;
-  int concentration;
   int intelligence;
   // int perception;
 };
@@ -51,6 +46,9 @@ class Fighter : public BaseComponent {
     this->mpRegen = mpRegen;
   }
 
+  void setBaseStats(int str, int agi, int in) { this->stats = BaseStats(str, agi, in); }
+  BaseStats getBaseStats() { return this->stats; }
+
   void setHP(int value) { this->hp = std::max(0, std::min(this->maxHP, value)); }
   void setMP(int value) { this->mp = std::max(0, std::min(this->maxMP, value)); }
 
@@ -68,6 +66,7 @@ class Fighter : public BaseComponent {
   int getBaseArmor() { return this->baseArmor; }
 
  private:
+  BaseStats stats;
   int maxHP = 0;
   int hp = 0;
   int hpRegen = 0;

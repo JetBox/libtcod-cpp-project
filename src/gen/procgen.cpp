@@ -93,6 +93,8 @@ void generateDungeon(
       }
     }
   }
+
+  world.getMap(mapID).buildFOVMap();
 }
 
 bool isWallsOnBothSides(GameMap& map, Position p) {
