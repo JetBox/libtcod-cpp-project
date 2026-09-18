@@ -1,5 +1,10 @@
 #include "explorer.h"
 
+#include <queue>
+#include <unordered_map>
+#include <unordered_set>
+
+#include "common/position.h"
 #include "components/explorable.h"
 #include "core/gameMap.h"
 
@@ -63,6 +68,61 @@ void Explorer::updateFOV(GameMap& map) {
       grid.discoveredEntities.insert_or_assign(e->getID(), e->getPosition());
     }
   }
+}
+
+Position Explorer::getNextAutoExploreDestination(Engine& engine) {
+  // Start traversing from the Player's location, breadth-first. The first unexplored open tile is returned
+  // TODO: factor in locked doors
+  // TODO: pick up items on the way
+  // TODO: stop when seeing an enemy
+  std::unordered_set<Position> exploredTiles;
+  std::deque<Position> queuedPositions;
+
+  Position currentPosition = this->getEntity()->getPosition();
+  ExploredGrid grid = this->getCurrentMap();
+  do {
+    // Get the neighbors of the current position
+    for (int i = 0; i < static_cast<int>(Direction::STATIONARY); i++) {
+      Direction dir = static_cast<Direction>(i);
+      Position newPos = currentPosition + dir;
+      int loc = GameMap::getLocInTileVector(newPos, grid.width);
+      Tile t = engine.getCurrentMap().getTileAt(newPos);
+      // If unexplored, return immediately
+      if (t.isWalkable && !grid.explored[loc]) {
+        return newPos;
+      }
+
+      // TODO: if wall and unexplored, map to nearby tile (the one we just came from)
+      if (t.isWall && !grid.explored[loc]) {
+        return currentPosition;
+      }
+
+      // If we are here, it's been explored. Ignore walls from exploring
+      if (t.isWalkable) {
+        // Tile is walkable, if we haven't queued it, do so
+        if (!exploredTiles.contains(newPos)) {
+          exploredTiles.emplace(newPos);
+          queuedPositions.push_back(newPos);
+        }
+      }
+    }
+
+    // Once here, we just want to pop the next position and set as the current
+    if (!queuedPositions.empty()) {
+      currentPosition = queuedPositions.front();
+      queuedPositions.pop_front();
+    } else {
+      break;
+    }
+  } while (true);
+
+  // If here, there were no unexplored tiles to explore. Return current position as sentinel
+  return this->getEntity()->getPosition();
+}
+
+void Explorer::ignoreEntityForAutoExplore(IDGenerator::ID eID) {
+  ExploredGrid grid = this->getCurrentMap();
+  grid.autoExploreIgnored.emplace(eID);
 }
 
 std::vector<Entity*> visibleEntities(GameMap& map, Explorer& explorer, Entity* self) {

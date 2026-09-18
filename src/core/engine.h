@@ -18,8 +18,8 @@ static constexpr auto SCREEN_WIDTH = 100;
 static constexpr auto SCREEN_HEIGHT = 64;
 
 // Dungeon gen
-static constexpr auto MAP_WIDTH = 150;
-static constexpr auto MAP_HEIGHT = 80;
+static constexpr auto MAP_WIDTH = 78;
+static constexpr auto MAP_HEIGHT = 52;
 static constexpr auto MAX_ROOMS = 30;
 static constexpr auto MIN_ROOM_SIZE = 6;
 static constexpr auto MAX_ROOM_SIZE = 10;

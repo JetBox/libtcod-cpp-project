@@ -198,7 +198,6 @@ void GameMap::updateFOVCell(Position pos) {
 Position GameMap::getNextStep(Position start, Position target) {
   this->getPathfinder().compute(start.x, start.y, target.x, target.y);
   Position nextStep = Position();
-  this->getPathfinder().size();
   this->getPathfinder().walk(&nextStep.x, &nextStep.y, true);
   return nextStep;
 }

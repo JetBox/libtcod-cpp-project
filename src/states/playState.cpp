@@ -12,11 +12,13 @@
 #include "actions/unlockAction.h"
 #include "actions/walkAction.h"
 #include "common/glyphs.h"
+#include "common/position.h"
 #include "components/ai/aiComponent.h"
 #include "components/combat.h"
 #include "components/explorer.h"
 #include "components/inventory.h"
 #include "components/item.h"
+#include "components/playerState.h"
 #include "components/vitals.h"
 #include "core/engine.h"
 #include "core/windowFrame.h"
@@ -54,7 +56,8 @@ void PlayState::update(Engine& engine) {
     }
 
     // If it's the player's turn but there's no queued action, stop and wait for input.
-    if (nextEntity == engine.getPlayer() && engine.getQueuedActions().empty()) {
+    if (nextEntity == engine.getPlayer() && engine.getQueuedActions().empty() &&
+        engine.getPlayer()->getComponent<PlayerStateComponent>().getCurrentState() == PlayerState::PLAYING) {
       return;
     }
 
@@ -76,15 +79,49 @@ void PlayState::update(Engine& engine) {
 
 void PlayState::processEntityTurn(Engine& engine, Entity* entity) {
   std::unique_ptr<Action> action = nullptr;
+  Entity* player = engine.getPlayer();
 
-  if (entity == engine.getPlayer()) {
-    // Action comes from queuedActions
-    std::deque<std::unique_ptr<Action>>& queue = engine.getQueuedActions();
-    if (queue.empty()) {
-      return;  // Wait for player input
+  if (entity == player) {
+    PlayerState playerState = player->getComponent<PlayerStateComponent>().getCurrentState();
+    if (playerState == PlayerState::AUTO_EXPLORE) {
+      // If we see an enemy (any entity with a Fighter that isn't the Player), stop
+      std::vector<Entity*> ve = visibleEntities(engine.getCurrentMap(), player->getComponent<Explorer>(), player);
+      for (auto e : ve) {
+        if (e->hasComponent<Fighter>()) {
+          player->getComponent<PlayerStateComponent>().setState(PlayerState::PLAYING);
+          engine.getMessageLog().add(Message("You see a " + e->getName() + ", so you stop."));
+          return;
+        }
+      }
+
+      // Queue up the next tile to explore
+      Position nextPositionTo = player->getComponent<Explorer>().getNextAutoExploreDestination(engine);
+      SDL_Log(
+          "Player POS: (%d, %d) - AutoExplore To: (%d, %d)",
+          player->getPosition().x,
+          player->getPosition().y,
+          nextPositionTo.x,
+          nextPositionTo.y);
+      if (nextPositionTo == player->getPosition()) {
+        // We can't autoexplore anymore, go back to playing with a message
+        player->getComponent<PlayerStateComponent>().setState(PlayerState::PLAYING);
+        engine.getMessageLog().add(Message("You have explored everywhere you can see."));
+        return;
+      }
+      Position nextStep = engine.getCurrentMap().getNextStep(player->getPosition(), nextPositionTo);
+      Direction dir = getDirectionToPosition(player->getPosition(), nextStep);
+      action = std::make_unique<WalkAction>(dir);
     }
-    action = std::move(queue.front());
-    queue.pop_front();
+    if (playerState == PlayerState::PLAYING) {
+      // Action comes from queuedActions
+      std::deque<std::unique_ptr<Action>>& queue = engine.getQueuedActions();
+      if (queue.empty()) {
+        return;  // Wait for player input
+      }
+      action = std::move(queue.front());
+      queue.pop_front();
+    }
+
   } else {
     action = entity->getComponent<AIComponent>().getAction(engine);
   }
@@ -144,6 +181,17 @@ bool PlayState::handleEvent(Engine& engine, SDL_Event* event) {
   if (engine.getQueuedActions().size() > 0) {
     return true;
   }
+  Entity* player = engine.getPlayer();
+
+  // Switch on PlayerState
+  PlayerState playerState = player->getComponent<PlayerStateComponent>().getCurrentState();
+  if (playerState == PlayerState::AUTO_EXPLORE) {
+    // All input should stop auto-explore
+    if (event->type == SDL_EVENT_KEY_DOWN) {
+      player->getComponent<PlayerStateComponent>().setState(PlayerState::PLAYING);
+      return true;
+    }
+  }
 
   // Game Event Processing
   if (event->type == SDL_EVENT_KEY_DOWN) {
@@ -151,50 +199,59 @@ bool PlayState::handleEvent(Engine& engine, SDL_Event* event) {
 
     // Inventory
     if (event->key.key == SDLK_I) {
-      if (!engine.getPlayer()->hasComponent<Inventory>()) {
+      if (!player->hasComponent<Inventory>()) {
         engine.queueAction(
             std::make_unique<ErrorAction>("ERROR: Player does not have Inventory to create Inventory Menu."));
       }
       engine.pushState(
           std::make_unique<InventoryMenu>(
-              "Inventory", engine.getPlayer()->getComponent<Inventory>().getItems(), inspectMenuOnChoose));
+              "Inventory", player->getComponent<Inventory>().getItems(), inspectMenuOnChoose));
       return true;
     }
     // Wear
     if (event->key.key == SDLK_W) {
-      if (!engine.getPlayer()->hasComponent<Inventory>()) {
+      if (!player->hasComponent<Inventory>()) {
         engine.queueAction(
             std::make_unique<ErrorAction>("ERROR: Player does not have Inventory to create Inventory Menu."));
       }
       engine.pushState(
           std::make_unique<InventoryMenu>(
               "What do you equip?",
-              engine.getPlayer()->getComponent<Inventory>().getItems(),
+              player->getComponent<Inventory>().getItems(),
               wearMenuOnChoose,
               filterForEquippable));
       return true;
     }
     // Drop
     if (event->key.key == SDLK_D) {
-      if (!engine.getPlayer()->hasComponent<Inventory>()) {
+      if (!player->hasComponent<Inventory>()) {
         engine.queueAction(
             std::make_unique<ErrorAction>("ERROR: Player does not have Inventory to create Inventory Menu."));
       }
       engine.pushState(
           std::make_unique<InventoryMenu>(
-              "What do you want to drop?", engine.getPlayer()->getComponent<Inventory>().getItems(), dropMenuOnChoose));
+              "What do you want to drop?", player->getComponent<Inventory>().getItems(), dropMenuOnChoose));
+      return true;
     }
     // Open
     if (event->key.key == SDLK_O) {
       engine.pushState(std::make_unique<DirectionSelector>(openActionOnSelect, "Open"));
+      return true;
     }
     // Unlock
     if (event->key.key == SDLK_U) {
       engine.pushState(std::make_unique<DirectionSelector>(unlockActionOnSelect, "Unlock"));
+      return true;
     }
     // Kick
     if (event->key.key == SDLK_K) {
       engine.pushState(std::make_unique<DirectionSelector>(kickActionOnSelect, "Kick"));
+      return true;
+    }
+    // Auto-Expxlore
+    if (event->key.key == SDLK_KP_0) {
+      engine.getPlayer()->getComponent<PlayerStateComponent>().setState(PlayerState::AUTO_EXPLORE);
+      return true;
     }
 
     // Action Handling
@@ -242,6 +299,8 @@ std::unique_ptr<Action> PlayState::processKeyDown(SDL_KeyboardEvent ev) {
       return std::make_unique<WalkAction>(Direction::SOUTHWEST);
     case SDLK_KP_3:
       return std::make_unique<WalkAction>(Direction::SOUTHEAST);
+    case SDLK_KP_5:
+      return std::make_unique<WalkAction>(Direction::STATIONARY);
 
     // Other Actions
     case SDLK_G:

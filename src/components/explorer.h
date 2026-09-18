@@ -6,12 +6,14 @@
 #include "common/idGenerator.h"
 #include "common/position.h"
 #include "component.h"
+#include "core/engine.h"
 #include "core/gameMap.h"
 
 struct ExploredGrid {
   int width = 0, height = 0;
   std::vector<bool> explored, visible;
   std::unordered_map<IDGenerator::ID, Position> discoveredEntities;  // Position is where last seen
+  std::unordered_set<IDGenerator::ID> autoExploreIgnored;  // Entities we ignore when mapping autocomplete
 };
 
 class Explorer : public BaseComponent {
@@ -33,6 +35,9 @@ class Explorer : public BaseComponent {
   void updateFOV(GameMap& map);
 
   int getFOVRadius();
+
+  Position getNextAutoExploreDestination(Engine& engine);
+  void ignoreEntityForAutoExplore(IDGenerator::ID eID);
 
  private:
   IDGenerator::ID currentMap = 0;

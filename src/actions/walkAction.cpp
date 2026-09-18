@@ -1,6 +1,7 @@
 #include "walkAction.h"
 
 #include "action.h"
+#include "common/position.h"
 #include "common/tiles.h"
 #include "components/item.h"
 #include "components/openable.h"
@@ -9,6 +10,11 @@
 #include "openAction.h"
 
 ActionResult WalkAction::perform(Engine& engine, Entity* entity) {
+  // If stationary dir, do nothing
+  if (this->dir == Direction::STATIONARY) {
+    return ActionResult(true);
+  }
+
   Position endPosition = entity->getPosition() + this->dir;
   GameMap& map = engine.getCurrentMap();
   if (map.inBounds(endPosition) && map.getTileAt(endPosition).isWalkable) {

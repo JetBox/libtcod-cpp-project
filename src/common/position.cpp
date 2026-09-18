@@ -28,3 +28,7 @@ Direction getDirectionToPosition(Position p1, Position p2) {
     }
   }
 }
+
+int Position::chebyshevDistance(const Position& other) const {
+  return std::max(std::abs(this->x - other.x), std::abs(this->y - other.y));
+}

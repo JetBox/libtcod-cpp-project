@@ -92,6 +92,17 @@ struct Position {
     *this = *this - dir;
     return *this;
   }
+
+  int chebyshevDistance(const Position& other) const;
+};
+
+template <>
+struct std::hash<Position> {
+  std::size_t operator()(const Position& p) const noexcept {
+    std::size_t hx = std::hash<int>{}(p.x);
+    std::size_t hy = std::hash<int>{}(p.y);
+    return hx ^ (hy + 0x9e3779b9 + (hx << 6) + (hx >> 2));
+  }
 };
 
 Direction getDirectionToPosition(Position p1, Position p2);

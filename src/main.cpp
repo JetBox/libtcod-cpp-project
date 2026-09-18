@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "components/explorer.h"
+#include "components/playerState.h"
 
 #define SDL_MAIN_USE_CALLBACKS
 #include <SDL3/SDL.h>
@@ -82,6 +83,7 @@ SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   player->addComponent<Fighter>();
   player->addComponent<Vitals>(100, 0);
   player->addComponent<Speed>();
+  player->addComponent<PlayerStateComponent>(PlayerState::PLAYING);
   player->addComponent<Explorer>(player.get());
   gameEngine.setPlayer(std::move(player));
 
