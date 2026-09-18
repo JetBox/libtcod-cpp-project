@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "actions/autoExploreAction.h"
 #include "actions/errorAction.h"
 #include "actions/grabAction.h"
 #include "actions/kickAction.h"
@@ -110,7 +111,7 @@ void PlayState::processEntityTurn(Engine& engine, Entity* entity) {
       }
       Position nextStep = engine.getCurrentMap().getNextStep(player->getPosition(), nextPositionTo);
       Direction dir = getDirectionToPosition(player->getPosition(), nextStep);
-      action = std::make_unique<WalkAction>(dir);
+      action = std::make_unique<AutoExploreAction>(dir);
     }
     if (playerState == PlayerState::PLAYING) {
       // Action comes from queuedActions

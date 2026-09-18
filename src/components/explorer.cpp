@@ -81,28 +81,32 @@ Position Explorer::getNextAutoExploreDestination(Engine& engine) {
   Position currentPosition = this->getEntity()->getPosition();
   ExploredGrid grid = this->getCurrentMap();
   do {
-    // Get the neighbors of the current position
-    for (int i = 0; i < static_cast<int>(Direction::STATIONARY); i++) {
-      Direction dir = static_cast<Direction>(i);
-      Position newPos = currentPosition + dir;
-      int loc = GameMap::getLocInTileVector(newPos, grid.width);
-      Tile t = engine.getCurrentMap().getTileAt(newPos);
-      // If unexplored, return immediately
-      if (t.isWalkable && !grid.explored[loc]) {
-        return newPos;
-      }
+    // If current position is a locked door that we have explored, ignore
+    Entity* e = engine.getCurrentMap().getBlockingEntity(currentPosition);
+    if (!(e && grid.autoExploreIgnored.contains(e->getID()))) {
+      // Get the neighbors of the current position
+      for (int i = 0; i < static_cast<int>(Direction::STATIONARY); i++) {
+        Direction dir = static_cast<Direction>(i);
+        Position newPos = currentPosition + dir;
+        int loc = GameMap::getLocInTileVector(newPos, grid.width);
+        Tile t = engine.getCurrentMap().getTileAt(newPos);
+        // If unexplored, return immediately
+        if (t.isWalkable && !grid.explored[loc]) {
+          return newPos;
+        }
 
-      // TODO: if wall and unexplored, map to nearby tile (the one we just came from)
-      if (t.isWall && !grid.explored[loc]) {
-        return currentPosition;
-      }
+        // TODO: if wall and unexplored, map to nearby tile (the one we just came from)
+        if (t.isWall && !grid.explored[loc]) {
+          return currentPosition;
+        }
 
-      // If we are here, it's been explored. Ignore walls from exploring
-      if (t.isWalkable) {
-        // Tile is walkable, if we haven't queued it, do so
-        if (!exploredTiles.contains(newPos)) {
-          exploredTiles.emplace(newPos);
-          queuedPositions.push_back(newPos);
+        // If we are here, it's been explored. Ignore walls from exploring
+        if (t.isWalkable) {
+          // Tile is walkable, if we haven't queued it, do so
+          if (!exploredTiles.contains(newPos)) {
+            exploredTiles.emplace(newPos);
+            queuedPositions.push_back(newPos);
+          }
         }
       }
     }

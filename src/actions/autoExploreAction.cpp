@@ -1,5 +1,7 @@
 #include "autoExploreAction.h"
 
+#include "action.h"
+#include "actions/openAction.h"
 #include "components/explorer.h"
 #include "components/locked.h"
 #include "components/openable.h"
@@ -23,10 +25,21 @@ ActionResult AutoExploreAction::perform(Engine& engine, Entity* entity) {
     // check if we ran into a door or other stationary thing
     Entity* e = map.getBlockingEntity(nextPos);
 
-    if (e->hasComponent<Openable>() && e->hasComponent<Locked>() && e->getComponent<Locked>().getIsLocked()) {
+    if (e && e->hasComponent<Openable>() && e->hasComponent<Locked>() && e->getComponent<Locked>().getIsLocked()) {
       // This is a locked door. Ignore this for auto-explore
       explorer.ignoreEntityForAutoExplore(e->getID());
       return ActionResult(false);
     }
+
+    // Otherwise, open doors
+    if (e && e->hasComponent<Openable>()) {
+      return ActionResult(std::make_unique<OpenAction>(this->dir));
+    }
+
+    // Otherwise, walk
+    entity->move(this->dir);
+    return ActionResult(true);
   }
+  // Somehow can't walk here
+  return ActionResult(false, "Auto-explore error.");
 }
