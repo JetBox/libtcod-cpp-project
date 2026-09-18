@@ -96,6 +96,7 @@ void PlayState::processEntityTurn(Engine& engine, Entity* entity) {
       }
 
       // Queue up the next tile to explore
+      // TODO: handle grabbing items
       Position nextPositionTo = player->getComponent<Explorer>().getNextAutoExploreDestination(engine);
       SDL_Log(
           "Player POS: (%d, %d) - AutoExplore To: (%d, %d)",
