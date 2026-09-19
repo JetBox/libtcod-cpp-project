@@ -20,12 +20,15 @@
 #include "components/inventory.h"
 #include "components/item.h"
 #include "components/playerState.h"
+#include "components/spells.h"
 #include "components/vitals.h"
 #include "core/engine.h"
 #include "core/windowFrame.h"
 #include "menus/inventoryMenu.h"
 #include "states/menus/directionSelector.h"
 #include "states/menus/inventoryMenu.h"
+#include "states/menus/spellList.h"
+#include "tileSelectionState.h"
 
 void PlayState::update(Engine& engine) {
   while (true) {
@@ -90,6 +93,7 @@ void PlayState::processEntityTurn(Engine& engine, Entity* entity) {
       for (auto e : ve) {
         if (e->hasComponent<Fighter>()) {
           player->getComponent<PlayerStateComponent>().setState(PlayerState::PLAYING);
+          player->getComponent<Explorer>().resetAutoExploreDestination();
           engine.getMessageLog().add(Message("You see a " + e->getName() + ", so you stop."));
           return;
         }
@@ -97,7 +101,14 @@ void PlayState::processEntityTurn(Engine& engine, Entity* entity) {
 
       // Queue up the next tile to explore
       // TODO: handle grabbing items
-      Position nextPositionTo = player->getComponent<Explorer>().getNextAutoExploreDestination(engine);
+
+      // If the Explorer's autoExploreDestination is -1,-1, then we need to recompute
+      Explorer& explorer = player->getComponent<Explorer>();
+      Position nextPositionTo = explorer.getAutoExploreDestination();
+      if (!explorer.hasAutoExploreDestination()) {
+        nextPositionTo = player->getComponent<Explorer>().getNextAutoExploreDestination(engine);
+      }
+
       SDL_Log(
           "Player POS: (%d, %d) - AutoExplore To: (%d, %d)",
           player->getPosition().x,
@@ -107,10 +118,11 @@ void PlayState::processEntityTurn(Engine& engine, Entity* entity) {
       if (nextPositionTo == player->getPosition()) {
         // We can't autoexplore anymore, go back to playing with a message
         player->getComponent<PlayerStateComponent>().setState(PlayerState::PLAYING);
+        explorer.resetAutoExploreDestination();
         engine.getMessageLog().add(Message("You have explored everywhere you can see."));
         return;
       }
-      Position nextStep = engine.getCurrentMap().getNextStep(player->getPosition(), nextPositionTo);
+      Position nextStep = engine.getCurrentMap().getNextStep(player->getPosition(), nextPositionTo, player);
       Direction dir = getDirectionToPosition(player->getPosition(), nextStep);
       action = std::make_unique<AutoExploreAction>(dir);
     }
@@ -190,6 +202,7 @@ bool PlayState::handleEvent(Engine& engine, SDL_Event* event) {
   if (playerState == PlayerState::AUTO_EXPLORE) {
     // All input should stop auto-explore
     if (event->type == SDL_EVENT_KEY_DOWN) {
+      player->getComponent<Explorer>().resetAutoExploreDestination();
       player->getComponent<PlayerStateComponent>().setState(PlayerState::PLAYING);
       return true;
     }
@@ -199,11 +212,22 @@ bool PlayState::handleEvent(Engine& engine, SDL_Event* event) {
   if (event->type == SDL_EVENT_KEY_DOWN) {
     // Menu Processing
 
+    // Spells
+    if (event->key.key == SDLK_S) {
+      if (!player->hasComponent<Spellbook>()) {
+        engine.queueAction(
+            std::make_unique<ErrorAction>("ERROR: Player does not have Spellbook to create Cast Spell Menu."));
+        return true;
+      }
+      engine.pushState(std::make_unique<SpellList>());
+      return true;
+    }
     // Inventory
     if (event->key.key == SDLK_I) {
       if (!player->hasComponent<Inventory>()) {
         engine.queueAction(
             std::make_unique<ErrorAction>("ERROR: Player does not have Inventory to create Inventory Menu."));
+        return true;
       }
       engine.pushState(
           std::make_unique<InventoryMenu>(
@@ -215,6 +239,7 @@ bool PlayState::handleEvent(Engine& engine, SDL_Event* event) {
       if (!player->hasComponent<Inventory>()) {
         engine.queueAction(
             std::make_unique<ErrorAction>("ERROR: Player does not have Inventory to create Inventory Menu."));
+        return true;
       }
       engine.pushState(
           std::make_unique<InventoryMenu>(
@@ -229,6 +254,7 @@ bool PlayState::handleEvent(Engine& engine, SDL_Event* event) {
       if (!player->hasComponent<Inventory>()) {
         engine.queueAction(
             std::make_unique<ErrorAction>("ERROR: Player does not have Inventory to create Inventory Menu."));
+        return true;
       }
       engine.pushState(
           std::make_unique<InventoryMenu>(
@@ -248,6 +274,11 @@ bool PlayState::handleEvent(Engine& engine, SDL_Event* event) {
     // Kick
     if (event->key.key == SDLK_K) {
       engine.pushState(std::make_unique<DirectionSelector>(kickActionOnSelect, "Kick"));
+      return true;
+    }
+    // Look
+    if (event->key.key == SDLK_SEMICOLON) {
+      engine.pushState(std::make_unique<TileSelectionState>(true, engine.getPlayer()->getPosition(), lookOnEnter));
       return true;
     }
     // Auto-Expxlore

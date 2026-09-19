@@ -38,6 +38,8 @@ class ListMenu : public GameState {
   int firstSelectableFrom(int rowIndex, int dir) const;
   void clampHighlightToSelectable();
 
+  bool isOverlayMenu() const override { return true; }
+
   void setSize(int w, int h) {
     this->width = w;
     this->height = h;

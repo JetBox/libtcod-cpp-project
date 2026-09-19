@@ -17,6 +17,7 @@
 #include "components/body.h"
 #include "components/combat.h"
 #include "components/inventory.h"
+#include "components/spells.h"
 #include "components/vitals.h"
 #include "core/engine.h"
 
@@ -85,6 +86,13 @@ SDL_AppResult SDL_AppInit(void**, int argc, char** argv) {
   player->addComponent<Speed>();
   player->addComponent<PlayerStateComponent>(PlayerState::PLAYING);
   player->addComponent<Explorer>(player.get());
+  player->addComponent<Spellbook>();
+
+  // Define Starting Player spells
+  Spellbook& spellbook = player->getComponent<Spellbook>();
+  spellbook.addSpell(Spell::MAGIC_MISSILE);
+  spellbook.addSpell(Spell::KNOCK);
+
   gameEngine.setPlayer(std::move(player));
 
   return SDL_APP_CONTINUE;

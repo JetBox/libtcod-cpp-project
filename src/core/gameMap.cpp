@@ -9,12 +9,14 @@
 #include "common/tiles.h"
 #include "components/explorable.h"
 #include "components/explorer.h"
+#include "components/locked.h"
 
 float MapPathCallback::getWalkCost(int xFrom, int yFrom, int xTo, int yTo, void* userData) const {
   auto* map = static_cast<GameMap*>(userData);
   if (!map) {
     return 0.0f;
   }
+  Position start = Position(xFrom, yFrom);
   Position nextStep = Position(xTo, yTo);
 
   Tile t = map->getTileAt(nextStep);
@@ -27,7 +29,25 @@ float MapPathCallback::getWalkCost(int xFrom, int yFrom, int xTo, int yTo, void*
     cost += 3.0f;
   }
 
-  if (map->getBlockingEntity(nextStep)) {
+  Entity* blocker = map->getBlockingEntity(nextStep);
+  if (blocker) {
+    // If the mover is an explorer, and it's a locked door that HASNT been discovered yet, return 0.0f
+    // But if it is an explorer, and it's a locked door that HAS been discovered, don't path to it
+    bool lockedDoor = blocker->hasComponent<Locked>() && blocker->getComponent<Locked>().getIsLocked();
+    if (lockedDoor && this->mover && this->mover->hasComponent<Explorer>()) {
+      Explorer& explorer = this->mover->getComponent<Explorer>();
+      if (explorer.getCurrentMap().autoExploreIgnored.contains(blocker->getID())) {
+        return 0.0f;
+      } else {
+        return cost;
+      }
+    }
+
+    // If the user isn't an explorer, but it's a locked door, always ignore it
+    if (lockedDoor) {
+      return 0.0f;
+    }
+
     cost += 10.0f;
   }
 
@@ -84,8 +104,9 @@ void GameMap::render(
       drawList.begin(), drawList.end(), [](Entity* a, Entity* b) { return a->getRenderOrder() < b->getRenderOrder(); });
 
   for (const auto& e : drawList) {
-    if (!player->getComponent<Explorer>().isTileVisible(e->getPosition())) {
-      // Entities with the Explorable may be drawn
+    if (false) {
+      // if (!player->getComponent<Explorer>().isTileVisible(e->getPosition())) {
+      //  Entities with the Explorable may be drawn
       if (e->hasComponent<Explorable>() && e->getComponent<Explorable>().canDrawToPlayer() &&
           player->getComponent<Explorer>().hasExploredEntity(e->getID())) {
         // Position screenPos = e->getPosition() - camera;  // world - camera
@@ -195,9 +216,11 @@ void GameMap::updateFOVCell(Position pos) {
   this->fovMap->setProperties(pos.x, pos.y, transparent, t.isWalkable);
 }
 
-Position GameMap::getNextStep(Position start, Position target) {
-  this->getPathfinder().compute(start.x, start.y, target.x, target.y);
+Position GameMap::getNextStep(Position start, Position target, Entity* mover) {
+  TCODPath& pathfinder = this->getPathfinder();
+  this->pathCallback->setMover(mover);
+  pathfinder.compute(start.x, start.y, target.x, target.y);
   Position nextStep = Position();
-  this->getPathfinder().walk(&nextStep.x, &nextStep.y, true);
+  pathfinder.walk(&nextStep.x, &nextStep.y, true);
   return nextStep;
 }

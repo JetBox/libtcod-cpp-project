@@ -20,4 +20,6 @@ class GameState {
   virtual void render(Engine& engine, tcod::Console* console) = 0;
 
   virtual bool renderStateBelow() const { return false; }
+
+  virtual bool isOverlayMenu() const { return false; }
 };

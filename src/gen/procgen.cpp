@@ -83,7 +83,7 @@ void generateDungeon(
             newDoor->addComponent<Openable>(DOOR_CHAR, DOOR_OPEN_CHAR, true, true);
 
             // Make doors locked 25% of the time
-            if (rng->getInt(1, 4) == 1) {
+            if (rng->getInt(1, 4) < 2) {
               newDoor->addComponent<Locked>();
             }
 

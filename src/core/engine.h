@@ -14,12 +14,12 @@
 #include "message.h"
 #include "states/gameState.h"
 
-static constexpr auto SCREEN_WIDTH = 100;
-static constexpr auto SCREEN_HEIGHT = 64;
+static constexpr auto SCREEN_WIDTH = 120;
+static constexpr auto SCREEN_HEIGHT = 75;
 
 // Dungeon gen
-static constexpr auto MAP_WIDTH = 78;
-static constexpr auto MAP_HEIGHT = 52;
+static constexpr auto MAP_WIDTH = 120;
+static constexpr auto MAP_HEIGHT = 63;
 static constexpr auto MAX_ROOMS = 30;
 static constexpr auto MIN_ROOM_SIZE = 6;
 static constexpr auto MAX_ROOM_SIZE = 10;
@@ -29,8 +29,8 @@ static constexpr auto MAX_ITEMS_PER_ROOM = 3;
 // View
 static constexpr auto VIEW_X = 0;
 static constexpr auto VIEW_Y = 0;
-static constexpr auto VIEW_WIDTH = 80;
-static constexpr auto VIEW_HEIGHT = 54;
+static constexpr auto VIEW_WIDTH = 100;
+static constexpr auto VIEW_HEIGHT = 65;
 
 // Game Map View
 static constexpr auto MAP_VIEW_X = VIEW_X + 1;
@@ -42,7 +42,7 @@ static constexpr auto MAP_VIEW_HEIGHT = VIEW_HEIGHT - 2;
 static constexpr auto TEXT_WIDTH = VIEW_WIDTH;
 static constexpr auto TEXT_HEIGHT = 10;
 static constexpr auto TEXT_X = 0;
-static constexpr auto TEXT_Y = 54;
+static constexpr auto TEXT_Y = VIEW_HEIGHT;
 
 // UI
 static constexpr auto UI_WIDTH = SCREEN_WIDTH - VIEW_WIDTH;  // Should be 20

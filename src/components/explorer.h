@@ -39,9 +39,18 @@ class Explorer : public BaseComponent {
   Position getNextAutoExploreDestination(Engine& engine);
   void ignoreEntityForAutoExplore(IDGenerator::ID eID);
 
+  void setAutoExploreDesitionation(Position p) { this->autoExploreDestination = p; }
+  Position getAutoExploreDestination() { return this->autoExploreDestination; }
+
+  Position getNearestFighterToPlayer(Engine& engine);
+
+  void resetAutoExploreDestination() { this->autoExploreDestination = Position(-1, -1); }
+  bool hasAutoExploreDestination() { return this->autoExploreDestination != Position(-1, -1); }
+
  private:
   IDGenerator::ID currentMap = 0;
   std::unordered_map<IDGenerator::ID, ExploredGrid> visitedMaps;
+  Position autoExploreDestination = Position(-1, -1);
 };
 
 std::vector<Entity*> visibleEntities(GameMap& map, Explorer& explorer, Entity* self);

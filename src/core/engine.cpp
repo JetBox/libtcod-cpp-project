@@ -71,14 +71,26 @@ SDL_AppResult Engine::handleEvent(SDL_Event* event) {
 void Engine::render(tcod::Console* console, tcod::Context* context) {
   console->clear();
 
+  int top = static_cast<int>(this->states.size()) - 1;
   // Find lowest state we need to start drawing from
   int start = static_cast<int>(this->states.size()) - 1;
   while (start > 0 && this->states[start]->renderStateBelow()) {
     --start;
   }
-  for (int i = start; i < static_cast<int>(this->states.size()); i++) {
+
+  for (int i = start; i <= top; i++) {
+    // Skip intermediate overlay menus that are covered by the top state,
+    // but always draw the base state (start) and the top state itself.
+    if (i != start && i != top && this->states[i]->isOverlayMenu()) {
+      continue;
+    }
     this->states[i]->render(*this, console);
   }
+
+  // Old code for when we didnt check overlay menus
+  // for (int i = start; i < static_cast<int>(this->states.size()); i++) {
+  //   this->states[i]->render(*this, console);
+  // }
 
   context->present(*console);
 }

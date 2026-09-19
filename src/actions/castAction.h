@@ -10,6 +10,8 @@ class CastAction : public Action {
 
   ActionResult perform(Engine& engine, Entity* entity) override;
 
+  std::vector<Entity*> resolveTargets(Engine& engine, SpellDefinition spD, Entity* caster);
+
  private:
   Spell spell;
   Position targetPosition = {-1, -1};

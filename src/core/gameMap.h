@@ -15,6 +15,11 @@ class GameMap;
 class MapPathCallback : public ITCODPathCallback {
  public:
   float getWalkCost(int xFrom, int yFrom, int xTo, int yTo, void* userData) const override;
+
+  void setMover(Entity* e) { this->mover = e; }
+
+ private:
+  Entity* mover = nullptr;
 };
 
 class GameMap {
@@ -66,7 +71,7 @@ class GameMap {
 
   TCODPath& getPathfinder();
 
-  Position getNextStep(Position start, Position target);
+  Position getNextStep(Position start, Position target, Entity* mover = nullptr);
 
   void updateFOVCell(Position pos);
 

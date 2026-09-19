@@ -31,7 +31,7 @@ std::unique_ptr<Action> AIComponent::getAction(Engine& engine) {
   if (canPathToPlayer) {
     Position startingPosition = this->getEntity()->getPosition();
     Position playerPosition = engine.getPlayer()->getPosition();
-    Position nextStep = engine.getCurrentMap().getNextStep(startingPosition, playerPosition);
+    Position nextStep = engine.getCurrentMap().getNextStep(startingPosition, playerPosition, this->getEntity());
     Direction dir = getDirectionToPosition(startingPosition, nextStep);
 
     return std::make_unique<WalkAction>(dir);
