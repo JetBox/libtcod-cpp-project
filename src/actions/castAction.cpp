@@ -47,7 +47,7 @@ ActionResult CastAction::perform(Engine& engine, Entity* entity) {
       }
       Entity* target = targets.at(0);
       target->getComponent<Fighter>().takeDamage(spDef.basePower);
-      return ActionResult(true, "Your hit the " + target->getName() + "!");
+      return ActionResult(true, "You hit the " + target->getName() + "!");
     }
     default:
       // Do nothing lmao

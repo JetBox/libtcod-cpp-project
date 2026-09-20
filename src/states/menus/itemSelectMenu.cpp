@@ -52,7 +52,7 @@ bool ItemSelectMenu::pressLetter(Engine& /* engine */, int itemIdx) {
   return true;
 }
 
-void ItemSelectMenu::printRow(tcod::Console* console, int i, int& itemCounter, Position p) {
+void ItemSelectMenu::printRow(tcod::Console* console, int i, int& itemCounter, Position p, int /* width */) {
   MenuRow& row = this->rows[i];
   if (row.isHeader) {
     tcod::print(*console, {p.x, p.y}, row.text, WHITE, std::nullopt);

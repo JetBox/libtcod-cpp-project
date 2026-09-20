@@ -10,6 +10,8 @@
 #include "common/position.h"
 #include "common/tiles.h"
 
+class Engine;
+
 class GameMap;
 
 class MapPathCallback : public ITCODPathCallback {
@@ -57,7 +59,15 @@ class GameMap {
 
   bool inBounds(Position pos);
 
-  void render(tcod::Console* console, Entity* player, Position camera, int viewX, int viewY, int viewH, int viewW);
+  void render(
+      Engine& engine,
+      tcod::Console* console,
+      Entity* player,
+      Position camera,
+      int viewX,
+      int viewY,
+      int viewH,
+      int viewW);
 
   Tile getTileAt(Position pos);
 

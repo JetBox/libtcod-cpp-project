@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "core/engine.h"
 #include "states/gameState.h"
 
 struct MenuRow {
@@ -27,7 +28,7 @@ class ListMenu : public GameState {
   void addHeader(const std::string& text) { rows.push_back({text, true}); }
   void addItem(const std::string& text) { rows.push_back({text, false}); }
   void clearRows() { rows.clear(); }
-  virtual void printRow(tcod::Console* console, int i, int& itemCounter, Position p);
+  virtual void printRow(tcod::Console* console, int i, int& itemCounter, Position p, int width);
 
   bool isHiglighted(int row);
   static char letterFor(int index);
@@ -45,14 +46,17 @@ class ListMenu : public GameState {
     this->height = h;
   }
 
+  void setXOffset(int x) { this->x_offset = x; }
+
   std::string title;
   std::string footer = "up/down/8/2 move | Enter select | Esc back";
   std::vector<MenuRow> rows;
 
  private:
   int width = 40;
-  int height = 0;
+  int height = 30;
   int highlight = 0;
   int scrollTop = 0;
+  int x_offset = (VIEW_WIDTH - 40) / 2;
   bool rebuildRows = true;
 };

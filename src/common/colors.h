@@ -7,6 +7,7 @@ static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
 static constexpr auto BLACK = tcod::ColorRGB{0, 0, 0};
 static constexpr auto RED = tcod::ColorRGB{200, 0, 0};
 static constexpr auto YELLOW = tcod::ColorRGB{200, 200, 0};
+static constexpr auto GREEN = tcod::ColorRGB{0, 200, 0};
 
 static constexpr auto SHROUD_BLACK = tcod::ColorRGBA{0, 0, 0, 255};
 static constexpr auto ENTITY_WHITE = tcod::ColorRGBA{255, 255, 255, 255};

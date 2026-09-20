@@ -9,6 +9,7 @@
 
 #include "common/entity.h"
 #include "common/idGenerator.h"
+#include "debug.h"
 #include "gameMap.h"
 #include "gameWorld.h"
 #include "message.h"
@@ -63,6 +64,7 @@ class Engine {
   GameMap& getCurrentMap() { return this->gameWorld.getActiveMap(); }
   IDGenerator::ID getCurrentMapID() { return this->gameWorld.getActiveMapID(); }
   MessageLog& getMessageLog() { return this->messageLog; }
+  Debug& getDebug() { return this->debug; }
 
   Position getCamera() const { return this->camera; }
   void computeCamera();
@@ -90,4 +92,7 @@ class Engine {
   std::vector<std::unique_ptr<GameState>> states;
 
   std::deque<std::unique_ptr<Action>> queuedActions;
+
+  // Debug
+  Debug debug;
 };

@@ -24,6 +24,7 @@
 #include "components/vitals.h"
 #include "core/engine.h"
 #include "core/windowFrame.h"
+#include "menus/debugMenu.h"
 #include "menus/inventoryMenu.h"
 #include "states/menus/directionSelector.h"
 #include "states/menus/inventoryMenu.h"
@@ -210,7 +211,15 @@ bool PlayState::handleEvent(Engine& engine, SDL_Event* event) {
 
   // Game Event Processing
   if (event->type == SDL_EVENT_KEY_DOWN) {
+    SDL_Keymod mod = event->key.mod;
+    bool shiftHeld = mod & SDL_KMOD_SHIFT;
     // Menu Processing
+
+    // Debug Menu
+    if (event->key.key == SDLK_D && shiftHeld) {
+      engine.pushState(std::make_unique<DebugMenu>(&engine));
+      return true;
+    }
 
     // Spells
     if (event->key.key == SDLK_S) {
@@ -303,7 +312,7 @@ void PlayState::render(Engine& engine, tcod::Console* console) {
   mapFrame.draw(*console);
 
   engine.getCurrentMap().render(
-      console, engine.getPlayer(), engine.getCamera(), MAP_VIEW_X, MAP_VIEW_Y, MAP_VIEW_HEIGHT, MAP_VIEW_WIDTH);
+      engine, console, engine.getPlayer(), engine.getCamera(), MAP_VIEW_X, MAP_VIEW_Y, MAP_VIEW_HEIGHT, MAP_VIEW_WIDTH);
 
   engine.getMessageLog().render(console, TEXT_X, TEXT_Y, TEXT_WIDTH, TEXT_HEIGHT);
   engine.renderUI(console);

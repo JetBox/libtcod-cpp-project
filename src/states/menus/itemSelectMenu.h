@@ -14,7 +14,7 @@ class ItemSelectMenu : public EntityListMenu {
   bool onSelect(Engine& engine, int itemIndex) override;
   virtual bool onLeft(Engine& /*engine*/, int /*index*/) override;
   virtual bool onRight(Engine& /*engine*/, int /*index*/) override;
-  void printRow(tcod::Console* console, int i, int& itemCounter, Position p) override;
+  void printRow(tcod::Console* console, int i, int& itemCounter, Position p, int width) override;
   bool pressLetter(Engine& engine, int itemIdx) override;
 
  private:

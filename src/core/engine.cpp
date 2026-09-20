@@ -27,6 +27,7 @@ Engine::Engine() {
   this->gameWorld = GameWorld();
   this->camera = Position();
   this->states.push_back(std::make_unique<PlayState>());
+  this->debug = Debug();
 
   IDGenerator::ID mapID = this->gameWorld.createMap(MAP_WIDTH, MAP_HEIGHT);
   this->gameWorld.setActiveMap(mapID);

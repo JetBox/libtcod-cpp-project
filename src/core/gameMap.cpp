@@ -10,6 +10,7 @@
 #include "components/explorable.h"
 #include "components/explorer.h"
 #include "components/locked.h"
+#include "debug.h"
 
 float MapPathCallback::getWalkCost(int xFrom, int yFrom, int xTo, int yTo, void* userData) const {
   auto* map = static_cast<GameMap*>(userData);
@@ -70,7 +71,14 @@ bool GameMap::inBounds(Position pos) {
 }
 
 void GameMap::render(
-    tcod::Console* console, Entity* player, Position camera, int viewX, int viewY, int viewH, int viewW) {
+    Engine& engine,
+    tcod::Console* console,
+    Entity* player,
+    Position camera,
+    int viewX,
+    int viewY,
+    int viewH,
+    int viewW) {
   for (int sy = 0; sy < viewH; ++sy) {
     for (int sx = 0; sx < viewW; ++sx) {
       // Screen (sx,sy) maps to world (wx,wy)
@@ -90,6 +98,9 @@ void GameMap::render(
       } else {
         drawGraphic = this->tiles[loc].lightGraphic;
       }
+      if (engine.getDebug().getOption(DebugOption::SHOW_ENTIRE_MAP)) {
+        drawGraphic = this->tiles[loc].lightGraphic;
+      }
       console->at({sx + viewX, sy + viewY}) = drawGraphic;  // note: SCREEN coords here
     }
   }
@@ -104,8 +115,8 @@ void GameMap::render(
       drawList.begin(), drawList.end(), [](Entity* a, Entity* b) { return a->getRenderOrder() < b->getRenderOrder(); });
 
   for (const auto& e : drawList) {
-    if (false) {
-      // if (!player->getComponent<Explorer>().isTileVisible(e->getPosition())) {
+    if (!engine.getDebug().getOption(DebugOption::SHOW_ALL_ENTITIES) &&
+        !player->getComponent<Explorer>().isTileVisible(e->getPosition())) {
       //  Entities with the Explorable may be drawn
       if (e->hasComponent<Explorable>() && e->getComponent<Explorable>().canDrawToPlayer() &&
           player->getComponent<Explorer>().hasExploredEntity(e->getID())) {

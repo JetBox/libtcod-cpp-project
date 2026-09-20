@@ -136,7 +136,7 @@ void ListMenu::render(Engine& engine, tcod::Console* console) {
   int rowCount = static_cast<int>(this->rows.size());
   int w = this->width;
   int h = (this->height > 0) ? this->height : rowCount + 4;
-  int x = (VIEW_WIDTH - w) / 2;
+  int x = this->x_offset;
   int y = (VIEW_HEIGHT - h) / 2;
 
   WindowFrame frame(x, y, w, h, true);
@@ -167,11 +167,11 @@ void ListMenu::render(Engine& engine, tcod::Console* console) {
 
   int end = std::min(rowCount, scrollTop + visibleRows);
   for (int i = scrollTop; i < end; ++i) {
-    this->printRow(console, i, itemCounter, Position(cx, cy + i));
+    this->printRow(console, i, itemCounter, Position(cx, cy + i), this->width);
   }
 }
 
-void ListMenu::printRow(tcod::Console* console, int i, int& itemCounter, Position p) {
+void ListMenu::printRow(tcod::Console* console, int i, int& itemCounter, Position p, int /* width */) {
   MenuRow& row = this->rows[i];
   if (row.isHeader) {
     tcod::print(*console, {p.x, p.y}, row.text, WHITE, std::nullopt);
