@@ -17,7 +17,7 @@ void SpellList::buildRows(Engine& engine) {
   std::vector<Spell>& spells = spellbook.getKnownSpells();
   for (auto spell : spells) {
     SpellDefinition spD = getSpellDefinition(spell);
-    this->addItem(spD.name + "(" + std::to_string(spD.mpCost) + " MP)");
+    this->addItem(spD.name + " (" + std::to_string(spD.mpCost) + " MP)");
   }
 }
 

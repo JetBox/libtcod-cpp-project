@@ -35,7 +35,7 @@ ActionResult KickAction::perform(Engine& engine, Entity* entity) {
   }
 
   Fighter fighter = entity->getComponent<Fighter>();
-  bool success = makeStatCheck(fighter.getBaseStats().getStrength());
+  bool success = true;  // TODO: figure out kicking
 
   if (!success) {
     return ActionResult(true, "You kicked at the " + target->getName() + " to no avail.");

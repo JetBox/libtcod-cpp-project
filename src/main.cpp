@@ -117,17 +117,22 @@ void SDL_AppQuit(void*, SDL_AppResult) {}
 
 /*
 TODO LIST:
-- Enemies
-  - Behaviors
-  - Pathfinding
-  - Actual Combat
 - Traps (Chests and Doors)
-- View equipment
+- Equipment that modifies stats/skills
+- View equipment and stats
 - Consumables (potions, food, scrolls)
-- Ranged combat
-- Auto-Explore
-- Magic
+- Player Options
+  - Auto-explore auto-picks up items
+  - Auto-use keys on normal interact
+  - Auto-pickup on certain items
+- FIX: fix spawning player on top of entities
+- Status effects (Slow, Poison, buffs, etc.)
+- Multiple floors
+- XP and Leveling Up
 - Config Files
+- More Spells:
+  - AOE Spell
+  - Direction Spell
 */
 
 /*

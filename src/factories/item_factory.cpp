@@ -16,7 +16,7 @@ std::string getEquipName(BodyPartKind kind) {
     case BodyPartKind::FEET:
       return "boots";
     case BodyPartKind::LEGS:
-      return "grieves";
+      return "greaves";
     case BodyPartKind::BACK:
       return "cape";
     case BodyPartKind::TORSO:

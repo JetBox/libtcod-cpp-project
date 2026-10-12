@@ -11,12 +11,29 @@ void Fighter::takeDamage(int incomingDamage) {
   this->setHP(newHP);
 }
 
-bool makeStatCheck(int stat) {
-  TCODRandom* rng = TCODRandom::getInstance();
-  int roll = rng->getInt(1, 100);
-  int rollUnder = std::min(100, std::max(10, (stat * 8) + 10));
+int getPower(Entity* e) {
+  if (!e->hasComponent<Fighter>()) {
+    return -1;
+  }
 
-  SDL_Log("Stat Check %d/%d: %d vs %d", stat, 9, roll, rollUnder);
+  Fighter& fighter = e->getComponent<Fighter>();
+  return fighter.getBasePower();
+}
 
-  return roll <= rollUnder;
+int getDodge(Entity* e) {
+  if (!e->hasComponent<Fighter>()) {
+    return -1;
+  }
+
+  Fighter& fighter = e->getComponent<Fighter>();
+  return fighter.getBaseDodge();
+}
+
+int getArmor(Entity* e) {
+  if (!e->hasComponent<Fighter>()) {
+    return -1;
+  }
+
+  Fighter& fighter = e->getComponent<Fighter>();
+  return fighter.getBaseArmor();
 }

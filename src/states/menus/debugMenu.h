@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/debug.h"
 #include "listMenu.h"
 
 class DebugMenu : public ListMenu {
